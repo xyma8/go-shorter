@@ -12,12 +12,20 @@ type Message struct {
 	Original_url string
 }
 
+func encodeBase62(id uint) (string, error) {
+	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	binary_result := []byte{0, 0, 0, 0, 0}
+
+	for i := 1; id > 0; i++ {
+		mod := id % 62
+		id = id / 62
+		binary_result[len(binary_result)-i] = alphabet[mod]
+	}
+	return string(binary_result), nil
+}
+
 func helloHandler(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, "Hello")
-	//fmt.Println(*req)
-	//body := req.Body
-	//body, _ := req.GetBody()
-	fmt.Println(req.Body)
 	json_decoder := json.NewDecoder(req.Body)
 
 	var body_content Message
@@ -26,13 +34,9 @@ func helloHandler(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 	fmt.Println(body_content.Original_url)
-	//longBuf := make([]byte, 1)
-	//fmt.Println(body.Read(longBuf))
 
-	//if _, err := body.Read(longBuf); err != nil {
-	//	log.Fatal(err)
-	//}
-	//fmt.Printf("%s\n", longBuf)
+	encodedID, _ := encodeBase62(125)
+	fmt.Println(encodedID)
 }
 
 func main() {
