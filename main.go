@@ -1,13 +1,15 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 
+	"github.com/xyma8/go-shorter/db"
+	"github.com/xyma8/go-shorter/internal/repository"
 	_ "modernc.org/sqlite"
 )
 
@@ -64,50 +66,38 @@ func uintPow(base, exponent uint) uint {
 	return result
 }
 
+func insertURL() {
+
+}
+
 func main() {
-	db, err := sql.Open("sqlite", "./go-shorter.db")
+	dbConn, err := db.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer dbConn.Close()
 
-	err = db.Ping()
-	if err != nil {
+	if err := db.Init(context.Background(), dbConn.DB); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Database connected sucessfully")
 
-	//init_database(db)
+	urlRepo := repository.NewUrlRepository(dbConn)
 
-	var test string
-	errQuery := db.QueryRow(`INSERT INTO urls (original_url, short_url) VALUES ("asdasd", "sdad")`).Scan(&test)
-	if errQuery != nil {
-		log.Fatal(errQuery)
-	}
-	fmt.Println(test)
+	/*
+		var test string
+		errQuery := db.QueryRow(`INSERT INTO urls (original_url, short_url) VALUES ("asdasd", "sdad")`).Scan(&test)
+		if errQuery != nil {
+			log.Fatal(errQuery)
+		}
+		fmt.Println(test)
 
-	errQuery = db.QueryRow("SELECT name FROM urls").Scan(&test)
-	if errQuery != nil {
-		log.Fatal(errQuery)
-	}
-	fmt.Println(test)
+		errQuery = db.QueryRow("SELECT name FROM urls").Scan(&test)
+		if errQuery != nil {
+			log.Fatal(errQuery)
+		}
+		fmt.Println(test)
+	*/
 
 	http.HandleFunc("/hello", shortURLHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func init_database(db *sql.DB) {
-	var talbeUrls string
-
-	err := db.QueryRow(`CREATE TABLE urls (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		original_url TEXT NOT NULL,
-		short_url TEXT UNIQUE,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	)`).Scan(&talbeUrls)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	print("Table 'urls' created")
 }
