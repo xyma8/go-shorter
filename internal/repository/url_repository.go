@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/xyma8/go-shorter/internal/models"
 )
@@ -20,8 +19,27 @@ func NewUrlRepository(db *sql.DB) *urlRepository {
 	return &urlRepository{db}
 }
 
-func (r *urlRepository) CreateUrl(ctx context.Context, url *models.UrlModel) (*models.UrlModel, error) {
-	fmt.Print("repository")
-	fmt.Print(url.Original_url)
-	return nil, nil
+func (r *urlRepository) CreateUrl(ctx context.Context, url *models.UrlModel) (uint, error) {
+	query := "INSERT INTO urls (original_url) VALUES (?)"
+	result, err := r.db.Exec(query, url.Original_url)
+	if err != nil {
+		return 0, err
+	}
+
+	insertID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return uint(insertID), nil
+}
+
+func (r *urlRepository) UpdateUrl(ctx context.Context, id uint, url *models.UrlModel) error {
+	query := "UPDATE urls SET short_url = ? WHERE id = ?"
+	_, err := r.db.Exec(query, url.Short_url, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
@@ -33,5 +34,9 @@ func (h *UrlHandler) ShortUrl(w http.ResponseWriter, req *http.Request) {
 	creatingUrlModel.Original_url = bodyContent.Original_url
 	creatingUrlModel.Short_url = ""
 
-	h.service.ShortUrl(ctx, &creatingUrlModel)
+	result, err := h.service.ShortUrl(ctx, &creatingUrlModel)
+	if err != nil {
+		io.WriteString(w, err.Error())
+	}
+	io.WriteString(w, result)
 }
