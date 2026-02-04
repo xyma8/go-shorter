@@ -1,19 +1,27 @@
 package repository
 
 import (
-	_ "database/sql"
+	"context"
+	"database/sql"
+	"fmt"
 
-	"github.com/xyma8/go-shorter/db"
+	"github.com/xyma8/go-shorter/internal/models"
 )
 
-type UrlRepository struct {
-	*db.DB
+type urlRepository struct {
+	db *sql.DB
 }
 
-func NewUrlRepository(db *db.DB) *UrlRepository {
-	return &UrlRepository{db}
+//type UrlRepository interface {
+//Create(ctx context.Context, url *models.UrlModel) (*models.UrlModel, error)
+//}
+
+func NewUrlRepository(db *sql.DB) *urlRepository {
+	return &urlRepository{db}
 }
 
-func InsertUrl() {
-
+func (r *urlRepository) CreateUrl(ctx context.Context, url *models.UrlModel) (*models.UrlModel, error) {
+	fmt.Print("repository")
+	fmt.Print(url.Original_url)
+	return nil, nil
 }

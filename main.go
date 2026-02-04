@@ -9,7 +9,9 @@ import (
 	"net/http"
 
 	"github.com/xyma8/go-shorter/db"
+	"github.com/xyma8/go-shorter/internal/handler"
 	"github.com/xyma8/go-shorter/internal/repository"
+	"github.com/xyma8/go-shorter/internal/service"
 	_ "modernc.org/sqlite"
 )
 
@@ -66,10 +68,6 @@ func uintPow(base, exponent uint) uint {
 	return result
 }
 
-func insertURL() {
-
-}
-
 func main() {
 	dbConn, err := db.Connect()
 	if err != nil {
@@ -81,8 +79,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urlRepo := repository.NewUrlRepository(dbConn)
-
+	urlRepo := repository.NewUrlRepository(dbConn.DB)
+	urlService := service.NewUrlService(urlRepo)
+	urlHandler := handler.NewUrlHandler(urlService)
 	/*
 		var test string
 		errQuery := db.QueryRow(`INSERT INTO urls (original_url, short_url) VALUES ("asdasd", "sdad")`).Scan(&test)
@@ -98,6 +97,6 @@ func main() {
 		fmt.Println(test)
 	*/
 
-	http.HandleFunc("/hello", shortURLHandler)
+	http.HandleFunc("/get_short", urlHandler.ShortUrl)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
