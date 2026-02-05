@@ -54,11 +54,3 @@ func (s *UrlService) GetOrigUrl(ctx context.Context, shortUrl string) (string, e
 
 	return url, nil
 }
-
-func encodeBiject(n uint) (uint, error) {
-	const M uint = 123412340
-	const a uint = 198134563
-	const b uint = 10
-
-	return (a*n + b) % M, nil
-}

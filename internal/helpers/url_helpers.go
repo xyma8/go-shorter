@@ -1,6 +1,11 @@
 package helpers
 
-import "errors"
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/binary"
+	"errors"
+)
 
 func EncodeBase62(n uint) (string, error) {
 	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -19,6 +24,13 @@ func EncodeBase62(n uint) (string, error) {
 }
 
 func EncodeFeistel(n uint) (uint, error) {
+	//var n2 byte = 1
+	//sum := sha256.Sum256([]byte{1})
+	bytes32 := make([]byte, 4)
+	binary.LittleEndian.PutUint64(bytes32, n)
+	hmac := hmac.New(sha256.New, []byte{1})
+	hmac.Write(n)
+
 	return 0, nil
 }
 
