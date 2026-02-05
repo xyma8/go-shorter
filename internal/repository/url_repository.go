@@ -43,3 +43,14 @@ func (r *urlRepository) UpdateUrl(ctx context.Context, id uint, url *models.UrlM
 
 	return nil
 }
+
+func (r *urlRepository) GetOrigUrl(ctx context.Context, shortUrl string) (string, error) {
+	query := "SELECT original_url FROM urls WHERE short_url = ?"
+	var res string
+	err := r.db.QueryRow(query, shortUrl).Scan(&res)
+	if err != nil {
+		return "", err
+	}
+
+	return res, nil
+}

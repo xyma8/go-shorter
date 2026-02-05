@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/xyma8/go-shorter/internal/helpers"
 	"github.com/xyma8/go-shorter/internal/models"
 )
 
@@ -13,6 +14,7 @@ type UrlService struct {
 type UrlRepository interface {
 	CreateUrl(ctx context.Context, url *models.UrlModel) (uint, error)
 	UpdateUrl(ctx context.Context, id uint, url *models.UrlModel) error
+	GetOrigUrl(ctx context.Context, shortUrl string) (string, error)
 }
 
 func NewUrlService(repo UrlRepository) *UrlService {
@@ -25,12 +27,12 @@ func (s *UrlService) ShortUrl(ctx context.Context, url *models.UrlModel) (string
 		return "", err
 	}
 
-	obfId, err := encodeXOR(id)
+	obfId, err := helpers.EncodeFeistel(id)
 	if err != nil {
 		return "", err
 	}
 
-	shortUrl, err := encodeBase62(obfId)
+	shortUrl, err := helpers.EncodeBase62(obfId)
 	if err != nil {
 		return "", err
 	}
@@ -44,33 +46,19 @@ func (s *UrlService) ShortUrl(ctx context.Context, url *models.UrlModel) (string
 	return url.Short_url, nil
 }
 
-func encodeBase62(id uint) (string, error) {
-	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	binary_result := []byte{0, 0, 0, 0, 0}
-
-	if id >= uintPow(62, 5) {
-		//return "", err
+func (s *UrlService) GetOrigUrl(ctx context.Context, shortUrl string) (string, error) {
+	url, err := s.repo.GetOrigUrl(ctx, shortUrl)
+	if err != nil {
+		return "", err
 	}
 
-	for i := 1; id > 0; i++ {
-		mod := id % 62
-		id = id / 62
-		binary_result[len(binary_result)-i] = alphabet[mod]
-	}
-	return string(binary_result), nil
+	return url, nil
 }
 
-func encodeXOR(id uint) (uint, error) {
-	const MASK uint = 0x2A5B8D3F
-	id = id ^ MASK
-	return id, nil
-}
+func encodeBiject(n uint) (uint, error) {
+	const M uint = 123412340
+	const a uint = 198134563
+	const b uint = 10
 
-func uintPow(base, exponent uint) uint {
-	result := uint(1)
-	for i := uint(0); i < exponent; i++ {
-		result *= base
-	}
-
-	return result
+	return (a*n + b) % M, nil
 }

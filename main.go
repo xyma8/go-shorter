@@ -35,6 +35,8 @@ func main() {
 		fmt.Println(test)
 	*/
 
-	http.HandleFunc("/get_short", urlHandler.ShortUrl)
+	http.HandleFunc("/api/get_short", urlHandler.ShortUrl)
+	http.HandleFunc("/api/get_orig", urlHandler.GetOrigUrl)
+	//http.HandleFunc("/", urlHandler.RedirectOrig)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
