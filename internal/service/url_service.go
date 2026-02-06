@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/xyma8/go-shorter/internal/helpers"
 	"github.com/xyma8/go-shorter/internal/models"
@@ -32,7 +31,7 @@ func (s *UrlService) ShortenUrl(ctx context.Context, url *models.UrlModel) (stri
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(obfId)
+	//fmt.Println(obfId)
 
 	shortUrl, err := helpers.EncodeURLBase62(uint(obfId), 5)
 	if err != nil {
