@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/xyma8/go-shorter/internal/helpers"
 	"github.com/xyma8/go-shorter/internal/models"
@@ -13,7 +14,7 @@ type UrlService struct {
 
 type UrlRepository interface {
 	CreateUrl(ctx context.Context, url *models.UrlModel) (uint, error)
-	UpdateUrl(ctx context.Context, id uint, url *models.UrlModel) error
+	UpdateShortUrl(ctx context.Context, id uint, url string) error
 	GetOrigUrl(ctx context.Context, shortUrl string) (string, error)
 }
 
@@ -21,29 +22,29 @@ func NewUrlService(repo UrlRepository) *UrlService {
 	return &UrlService{repo: repo}
 }
 
-func (s *UrlService) ShortUrl(ctx context.Context, url *models.UrlModel) (string, error) {
+func (s *UrlService) ShortenUrl(ctx context.Context, url *models.UrlModel) (string, error) {
 	id, err := s.repo.CreateUrl(ctx, url)
 	if err != nil {
 		return "", err
 	}
 
-	obfId, err := helpers.EncodeFeistel(id)
+	obfId, err := helpers.EncodeBiject(id)
+	if err != nil {
+		return "", err
+	}
+	fmt.Println(obfId)
+
+	shortUrl, err := helpers.EncodeURLBase62(uint(obfId), 5)
 	if err != nil {
 		return "", err
 	}
 
-	shortUrl, err := helpers.EncodeBase62(obfId)
+	err = s.repo.UpdateShortUrl(ctx, id, shortUrl)
 	if err != nil {
 		return "", err
 	}
 
-	url.Short_url = shortUrl
-	err = s.repo.UpdateUrl(ctx, id, url)
-	if err != nil {
-		return "", err
-	}
-
-	return url.Short_url, nil
+	return shortUrl, nil
 }
 
 func (s *UrlService) GetOrigUrl(ctx context.Context, shortUrl string) (string, error) {

@@ -2,11 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/xyma8/go-shorter/internal/models"
 	"github.com/xyma8/go-shorter/internal/service"
@@ -38,9 +36,9 @@ func (h *UrlHandler) ShortUrl(w http.ResponseWriter, req *http.Request) {
 
 	var creatingUrlModel models.UrlModel
 	creatingUrlModel.Original_url = bodyContent.Original_url
-	creatingUrlModel.Short_url = ""
+	//creatingUrlModel.Short_url = ""
 
-	result, err := h.service.ShortUrl(ctx, &creatingUrlModel)
+	result, err := h.service.ShortenUrl(ctx, &creatingUrlModel)
 	if err != nil {
 		io.WriteString(w, err.Error())
 	}
@@ -61,5 +59,5 @@ func (h *UrlHandler) GetOrigUrl(w http.ResponseWriter, r *http.Request) {
 func (h *UrlHandler) RedirectOrig(w http.ResponseWriter, r *http.Request) {
 	//ctx := r.Context()
 
-	fmt.Println(strings.TrimLeft(r.URL.Path, "/"))
+	//fmt.Println(strings.TrimLeft(r.URL.Path, "/"))
 }

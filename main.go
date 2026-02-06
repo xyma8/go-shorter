@@ -26,14 +26,6 @@ func main() {
 	urlRepo := repository.NewUrlRepository(dbConn.DB)
 	urlService := service.NewUrlService(urlRepo)
 	urlHandler := handler.NewUrlHandler(urlService)
-	/*
-
-		errQuery = db.QueryRow("SELECT name FROM urls").Scan(&test)
-		if errQuery != nil {
-			log.Fatal(errQuery)
-		}
-		fmt.Println(test)
-	*/
 
 	http.HandleFunc("/api/get_short", urlHandler.ShortUrl)
 	http.HandleFunc("/api/get_orig", urlHandler.GetOrigUrl)

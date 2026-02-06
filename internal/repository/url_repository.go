@@ -34,9 +34,9 @@ func (r *urlRepository) CreateUrl(ctx context.Context, url *models.UrlModel) (ui
 	return uint(insertID), nil
 }
 
-func (r *urlRepository) UpdateUrl(ctx context.Context, id uint, url *models.UrlModel) error {
+func (r *urlRepository) UpdateShortUrl(ctx context.Context, id uint, url string) error {
 	query := "UPDATE urls SET short_url = ? WHERE id = ?"
-	_, err := r.db.Exec(query, url.Short_url, id)
+	_, err := r.db.Exec(query, url, id)
 	if err != nil {
 		return err
 	}
