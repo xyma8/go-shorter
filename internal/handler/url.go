@@ -71,7 +71,6 @@ func (h *UrlHandler) GetOrigUrl(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UrlHandler) ShortRedirect(w http.ResponseWriter, r *http.Request) {
-	//ctx := r.Context()
 	short := strings.TrimPrefix(r.URL.Path, "/")
 	if short == "" {
 		http.NotFound(w, r)
