@@ -27,8 +27,10 @@ func main() {
 	urlService := service.NewUrlService(urlRepo)
 	urlHandler := handler.NewUrlHandler(urlService)
 
+	fs := http.FileServer(http.Dir("./public"))
+	http.Handle("/ui", http.StripPrefix("/ui", fs))
 	http.HandleFunc("/api/get_short", urlHandler.ShortUrl)
 	http.HandleFunc("/api/get_orig", urlHandler.GetOrigUrl)
-	//http.HandleFunc("/", urlHandler.RedirectOrig)
+	http.HandleFunc("/", urlHandler.ShortRedirect)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -19,7 +19,7 @@ func NewUrlRepository(db *sql.DB) *urlRepository {
 	return &urlRepository{db}
 }
 
-func (r *urlRepository) CreateUrl(ctx context.Context, url *models.UrlModel) (uint, error) {
+func (r *urlRepository) CreateUrl(ctx context.Context, url *models.CreatingUrl) (uint, error) {
 	query := "INSERT INTO urls (original_url) VALUES (?)"
 	result, err := r.db.Exec(query, url.Original_url)
 	if err != nil {

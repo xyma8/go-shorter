@@ -12,7 +12,7 @@ type UrlService struct {
 }
 
 type UrlRepository interface {
-	CreateUrl(ctx context.Context, url *models.UrlModel) (uint, error)
+	CreateUrl(ctx context.Context, url *models.CreatingUrl) (uint, error)
 	UpdateShortUrl(ctx context.Context, id uint, url string) error
 	GetOrigUrl(ctx context.Context, shortUrl string) (string, error)
 }
@@ -21,36 +21,43 @@ func NewUrlService(repo UrlRepository) *UrlService {
 	return &UrlService{repo: repo}
 }
 
-func (s *UrlService) ShortenUrl(ctx context.Context, url *models.UrlModel) (string, error) {
+func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl) (*models.Url, error) {
 	id, err := s.repo.CreateUrl(ctx, url)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	obfId, err := helpers.EncodeBiject(id)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	//fmt.Println(obfId)
 
 	shortUrl, err := helpers.EncodeURLBase62(uint(obfId), 5)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	err = s.repo.UpdateShortUrl(ctx, id, shortUrl)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return shortUrl, nil
+	resUrl := models.Url{
+		Original_url: url.Original_url,
+		Short_url:    shortUrl,
+	}
+	return &resUrl, nil
 }
 
-func (s *UrlService) GetOrigUrl(ctx context.Context, shortUrl string) (string, error) {
+func (s *UrlService) GetOrigUrl(ctx context.Context, shortUrl string) (*models.OrigUrl, error) {
 	url, err := s.repo.GetOrigUrl(ctx, shortUrl)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return url, nil
+	origUrl := models.OrigUrl{
+		Original_url: url,
+	}
+	return &origUrl, nil
 }

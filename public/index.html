@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>URL shorter</title>
+  </head>
+  <body>
+    <h1>URL shorter</h1>
+    <div>
+      <b>Url: </b>
+
+      <input type="url" id="i-url" placeholder="Enter URL" size="50" />
+      <button id="b-send">Get Short</button>
+    </div>
+    <br />
+    <div>
+      <b id="label-short" hidden>Short URL: </b>
+      <a id="link-short" href="google.com"></a>
+    </div>
+
+    <script>
+      document.getElementById('b-send').onclick = async () => {
+        const resultText = document.getElementById('link-short');
+        const labelShort = document.getElementById('label-short');
+        const inputElement = document.getElementById('i-url');
+        const inputValue = inputElement.value;
+
+        if (!inputValue) {
+          alert('Enter a URL');
+          return;
+        }
+
+        try {
+          const response = await fetch('http://localhost:8080/api/get_short', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              original_url: inputValue,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          if (data.short_url) {
+            labelShort.hidden = false;
+            resultText.textContent = data.short_url;
+            resultText.href = data.short_url;
+          }
+        } catch (error) {
+          console.log('Error: ', error);
+        }
+      };
+    </script>
+  </body>
+</html>
