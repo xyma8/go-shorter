@@ -31,7 +31,6 @@ func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl) (*
 	if err != nil {
 		return nil, err
 	}
-	//fmt.Println(obfId)
 
 	shortUrl, err := helpers.EncodeURLBase62(uint(obfId), 5)
 	if err != nil {

@@ -2,7 +2,10 @@ module github.com/xyma8/go-shorter
 
 go 1.25.6
 
-require modernc.org/sqlite v1.44.3
+require (
+	github.com/lib/pq v1.11.1
+	modernc.org/sqlite v1.44.3
+)
 
 require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
