@@ -17,9 +17,22 @@ type DB struct {
 func Connect() (*DB, error) {
 	var user string = os.Getenv("POSTGRES_USER")
 	password := os.Getenv("POSTGRES_PASSWORD")
+
 	host := os.Getenv("POSTGRES_HOST")
+	if host == "" {
+		host = "0.0.0.0"
+	}
+
 	port := os.Getenv("POSTGRES_PORT")
+	if port == "" {
+		port = "5432"
+	}
+
 	dbName := os.Getenv("POSTGRES_DB")
+	if dbName == "" {
+		dbName = "goshorter"
+	}
+
 	sslMode := os.Getenv("POSTGRES_SSLMODE")
 	if sslMode == "" {
 		sslMode = "disable"

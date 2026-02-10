@@ -9,7 +9,6 @@ import (
 	"github.com/xyma8/go-shorter/internal/handler"
 	"github.com/xyma8/go-shorter/internal/repository"
 	"github.com/xyma8/go-shorter/internal/service"
-	_ "modernc.org/sqlite"
 )
 
 func main() {
