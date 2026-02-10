@@ -42,49 +42,6 @@ func EncodeURLBase62(n uint, lenURL uint) (string, error) {
 	return string(res), nil
 }
 
-func Feistel(n uint) (uint32, error) {
-	//SIZE := uintPow(62, 5) - uintPow(62, 4)
-
-	n += uintPow(62, 4)
-	fmt.Println(n)
-	if n >= uintPow(62, 5) {
-		return 0, fmt.Errorf("%w: N must be 62^%d < (N + 62^%d) < 62^%d", ErrNumberOutOfRange, 4, 4, 5)
-	}
-	L := uint16(n & 0xFFFF)
-	R := uint16(n >> 16)
-
-	key := []byte("super-secret-key-32-bytes_do-not-change")
-	rounds := 3
-
-	for i := 0; i < rounds; i++ {
-		h := hmac.New(sha256.New, key)
-		h.Write([]byte{byte(R >> 8), byte(R), byte(i)})
-		sum := h.Sum(nil)
-		F := binary.BigEndian.Uint16(sum[:2])
-
-		L, R = R, L^F
-	}
-	res := (uint32(R)<<16 | uint32(L))
-	return res, nil
-}
-
-func EncodeBiject(n uint) (uint, error) {
-	LOW := uintPow(62, 4)
-	HIGH := uintPow(62, 5)
-	SIZE := HIGH - LOW
-
-	n += LOW
-	fmt.Println(n)
-	if n >= HIGH {
-		return 0, fmt.Errorf("%w: N must be 62^%d < (N + 62^%d) < 62^%d", ErrNumberOutOfRange, 4, 4, 5)
-	}
-	var a uint = 45555
-	var b uint = 909
-	res := ((a*n + b) % SIZE) + LOW
-
-	return res, nil
-}
-
 func prf(key []byte, data []byte) uint64 {
 	mac := hmac.New(sha256.New, key)
 	mac.Write(data)
