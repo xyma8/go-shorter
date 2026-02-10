@@ -21,13 +21,13 @@ func NewUrlService(repo UrlRepository) *UrlService {
 	return &UrlService{repo: repo}
 }
 
-func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl) (*models.Url, error) {
+func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl, permuteKey string) (*models.Url, error) {
 	id, err := s.repo.CreateUrl(ctx, url)
 	if err != nil {
 		return nil, err
 	}
 
-	obfId, err := helpers.EncodeBiject(id)
+	obfId, err := helpers.PermuteRange(uint64(id), []byte(permuteKey))
 	if err != nil {
 		return nil, err
 	}

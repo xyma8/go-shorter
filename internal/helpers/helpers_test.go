@@ -42,3 +42,8 @@ func TestEncodeURLBase62(t *testing.T) {
 
 	//t.Logf("r=%v; err=%v", high, err)
 }
+
+func TestEncodeBiject(t *testing.T) {
+	got, err := PermuteRange(2, []byte("super-secret-key_do-not-change")) // подтягивать
+	t.Log(got, err)
+}

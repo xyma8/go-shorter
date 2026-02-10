@@ -40,7 +40,7 @@ func (h *UrlHandler) ShortUrl(w http.ResponseWriter, req *http.Request) {
 	creatingUrlModel.Original_url = bodyContent.Original_url
 	//creatingUrlModel.Short_url = ""
 
-	res, err := h.service.ShortenUrl(ctx, &creatingUrlModel)
+	res, err := h.service.ShortenUrl(ctx, &creatingUrlModel, os.Getenv("PERMUTE_SECRET_KEY"))
 	if err != nil {
 		io.WriteString(w, err.Error())
 	}
