@@ -58,5 +58,6 @@ func (s *UrlService) GetOrigUrl(ctx context.Context, shortUrl string) (*models.O
 	origUrl := models.OrigUrl{
 		Original_url: url,
 	}
+
 	return &origUrl, nil
 }

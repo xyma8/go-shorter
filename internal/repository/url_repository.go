@@ -46,9 +46,10 @@ func (r *urlRepository) UpdateShortUrl(ctx context.Context, id uint, url string)
 }
 
 func (r *urlRepository) GetOrigUrl(ctx context.Context, shortUrl string) (string, error) {
-	query := "SELECT original_url FROM urls WHERE short_url = $1"
+	query := "SELECT original_url FROM urls WHERE short_url = ($1)"
 	var res string
 	err := r.db.QueryRow(query, shortUrl).Scan(&res)
+	// вернет err если не будет записей
 	if err != nil {
 		return "", err
 	}

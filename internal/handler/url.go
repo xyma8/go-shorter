@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"strings"
 
@@ -71,36 +70,28 @@ func (h *UrlHandler) GetOrigUrl(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UrlHandler) ShortRedirect(w http.ResponseWriter, r *http.Request) {
-	short := strings.TrimPrefix(r.URL.Path, "/")
-	if short == "" {
+	ctx := r.Context()
+	shortUrl := strings.TrimPrefix(r.URL.Path, "/")
+	if shortUrl == "" {
 		http.NotFound(w, r)
 		return
 	}
 
-	// запрос к api
-	apiURL := "http://localhost:8080/api/get_orig?short_url=" + url.QueryEscape(short)
-	res, err := http.Get(apiURL)
+	res, err := h.service.GetOrigUrl(ctx, shortUrl)
 	if err != nil {
-		http.Error(w, "api unavailable", http.StatusBadGateway)
-		return
-	}
-	defer res.Body.Close()
-
-	var urlData models.OrigUrl
-	if err := json.NewDecoder(res.Body).Decode(&urlData); err != nil {
-		http.Error(w, "bad api response", http.StatusBadGateway)
-		return
-	}
-
-	if urlData.Original_url == "" {
+		//http.Error(w, "unavailable", http.StatusBadGateway)
 		http.NotFound(w, r)
 		return
 	}
 
-	if !strings.HasPrefix(urlData.Original_url, "https:/") {
-		urlData.Original_url = strings.Join([]string{"https://", urlData.Original_url}, "")
+	if res == nil || res.Original_url == "" {
+		http.NotFound(w, r)
+		return
 	}
 
-	http.Redirect(w, r, urlData.Original_url, http.StatusFound) // 302
-	//fmt.Println(strings.TrimLeft(r.URL.Path, "/"))
+	if !strings.HasPrefix(res.Original_url, "https:/") {
+		res.Original_url = strings.Join([]string{"https://", res.Original_url}, "")
+	}
+
+	http.Redirect(w, r, res.Original_url, http.StatusFound) // 302
 }

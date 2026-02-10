@@ -29,6 +29,7 @@ func main() {
 
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/ui", http.StripPrefix("/ui", fs))
+	http.Handle("/ui/", http.StripPrefix("/ui", fs))
 	http.HandleFunc("/api/get_short", urlHandler.ShortUrl)
 	http.HandleFunc("/api/get_orig", urlHandler.GetOrigUrl)
 	http.HandleFunc("/", urlHandler.ShortRedirect)
