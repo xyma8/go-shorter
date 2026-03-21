@@ -73,7 +73,7 @@ func (h *UrlHandler) ShortRedirect(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	shortUrl := strings.TrimPrefix(r.URL.Path, "/")
 	if shortUrl == "" {
-		http.NotFound(w, r)
+		http.Redirect(w, r, "/ui", http.StatusFound)
 		return
 	}
 

@@ -10,11 +10,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type DB struct {
-	*sql.DB
+type Postgres struct {
 }
 
-func Connect() (*DB, error) {
+func NewPostgres() *Postgres {
+	return &Postgres{}
+}
+
+func (p *Postgres) Connect() (*sql.DB, error) {
 	var user string = os.Getenv("POSTGRES_USER")
 	password := os.Getenv("POSTGRES_PASSWORD")
 
@@ -50,10 +53,10 @@ func Connect() (*DB, error) {
 	}
 	fmt.Println("Успешно подключено к PostgreSQL!")
 
-	return &DB{db}, nil
+	return db, nil
 }
 
-func Init(ctx context.Context, db *sql.DB) error {
+func (p *Postgres) InitDB(ctx context.Context, db *sql.DB) error {
 	const schema = `
 	CREATE TABLE IF NOT EXISTS urls (
 		id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
