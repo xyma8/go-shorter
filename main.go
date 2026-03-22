@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/xyma8/go-shorter/db"
 	"github.com/xyma8/go-shorter/internal/handler"
@@ -45,14 +46,23 @@ func main() {
 
 	urlHandler := handler.NewUrlHandler(urlService)
 
-	fs := http.FileServer(http.Dir("./public"))
+	filesDir, is := os.LookupEnv("UI_FILES_DIS")
+	if !is {
+		filesDir = "./public"
+	}
+	fs := http.FileServer(http.Dir(filesDir))
+
 	http.Handle("/ui", http.StripPrefix("/ui", fs))
 	http.Handle("/ui/", http.StripPrefix("/ui", fs))
 	http.HandleFunc("/api/get_short", urlHandler.ShortUrl)
 	http.HandleFunc("/api/get_orig", urlHandler.GetOrigUrl)
 	http.HandleFunc("/", urlHandler.ShortRedirect)
 
-	addr := ":8007"
-	log.Printf("go shorter started on %s ", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	appPort, is := os.LookupEnv("APP_PORT")
+	if !is {
+		appPort = "8080"
+	}
+
+	log.Printf("go shorter started on :%s ", appPort)
+	log.Fatal(http.ListenAndServe(strings.Join([]string{":", appPort}, ""), nil))
 }
