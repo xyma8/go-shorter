@@ -87,7 +87,7 @@
           const response = await fetch('/api/get_short', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ original_url: inputValue }),
+            body: JSON.stringify({ orig_url: inputValue }),
           });
 
           if (!response.ok) {
@@ -96,10 +96,10 @@
 
           const data = await response.json();
 
-          if (data.short_url) {
-            const shortView = data.short_url.replace(/^https?:\/\//, '');
+          if (data.s_url) {
+            const shortView = data.s_url.replace(/^https?:\/\//, '');
             resultText.textContent = shortView;
-            resultText.href = data.short_url;
+            resultText.href = data.s_url;
             resultBox.style.display = 'block';
           }
         } catch (error) {

@@ -21,7 +21,7 @@ func NewUrlService(repo UrlRepository) *UrlService {
 	return &UrlService{repo: repo}
 }
 
-func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl, permuteKey string) (*models.Url, error) {
+func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl, permuteKey string) (*models.ShortUrl, error) {
 	id, err := s.repo.CreateUrl(ctx, url)
 	if err != nil {
 		return nil, err
@@ -42,9 +42,9 @@ func (s *UrlService) ShortenUrl(ctx context.Context, url *models.CreatingUrl, pe
 		return nil, err
 	}
 
-	resUrl := models.Url{
-		Original_url: url.Original_url,
-		Short_url:    shortUrl,
+	resUrl := models.ShortUrl{
+		//Original_url: url.Original_url,
+		Short_url: shortUrl,
 	}
 	return &resUrl, nil
 }
