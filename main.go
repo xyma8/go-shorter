@@ -64,5 +64,5 @@ func main() {
 	}
 
 	log.Printf("go shorter started on :%s ", appPort)
-	log.Fatal(http.ListenAndServe(strings.Join([]string{":", appPort}, ""), nil))
+	log.Fatal(http.ListenAndServe(strings.Join([]string{appPort}, ""), nil))
 }

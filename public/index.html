@@ -3,38 +3,77 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
     <title>URL shorter</title>
   </head>
-  <body style="font-size: 2rem; padding: 20px">
-    <h1 style="font-size: 3rem">URL shorter</h1>
-    <div>
-      <b>URL: </b>
+  <body
+    style="
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #1c1c1c;
+    "
+  >
+    <div style="max-width: 700px; margin: 30px auto; padding: 20px">
+      <h1 style="margin: 0 0 20px; font-size: 2rem">URL shorter</h1>
 
       <input
         type="url"
         id="i-url"
-        placeholder="Enter URL"
-        style="font-size: 1.5rem; width: 100%; padding: 10px"
+        placeholder="Enter long URL"
+        style="
+          box-sizing: border-box;
+          width: 100%;
+          padding: 14px;
+          font-size: 1.2rem;
+          border: 1px solid #bbb;
+          border-radius: 10px;
+          outline: none;
+        "
       />
+
       <button
         id="b-send"
-        style="font-size: 1.5rem; padding: 10px; margin-top: 10px"
+        style="
+          margin-top: 15px;
+          padding: 14px 18px;
+          font-size: 1.1rem;
+          font-weight: bold;
+          border: 1px solid #111;
+          border-radius: 10px;
+          background: #1c1c1c;
+          color: #e4e1e1;
+          cursor: pointer;
+        "
       >
-        Get Short
+        GET SHORT !
       </button>
-    </div>
-    <br />
-    <div>
-      <b id="label-short" hidden>Short URL: </b>
-      <a id="link-short" href="" style="font-size: 1.5rem"></a>
+
+      <div
+        id="result-box"
+        style="
+          margin-top: 24px;
+          padding: 14px;
+          border: 2px solid #ddd;
+          border-radius: 10px;
+          display: none;
+        "
+      >
+        <div style="font-size: 1.2rem; margin-bottom: 8px">🔗 Short URL:</div>
+        <a
+          id="link-short"
+          href=""
+          style="font-size: 1.7rem; color: #232b70; word-break: break-all"
+        ></a>
+      </div>
     </div>
 
     <script>
       document.getElementById('b-send').onclick = async () => {
+        const button = document.getElementById('b-send');
         const resultText = document.getElementById('link-short');
-        const labelShort = document.getElementById('label-short');
-        const inputElement = document.getElementById('i-url');
-        const inputValue = inputElement.value;
+        const resultBox = document.getElementById('result-box');
+        const inputValue = document.getElementById('i-url').value;
 
         if (!inputValue) {
           alert('Enter a URL');
@@ -42,12 +81,13 @@
         }
 
         try {
+          button.disabled = true;
+          button.textContent = 'WAIT...';
+
           const response = await fetch('/api/get_short', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              original_url: inputValue,
-            }),
+            body: JSON.stringify({ original_url: inputValue }),
           });
 
           if (!response.ok) {
@@ -55,13 +95,19 @@
           }
 
           const data = await response.json();
+
           if (data.short_url) {
-            labelShort.hidden = false;
-            resultText.textContent = data.short_url;
+            const shortView = data.short_url.replace(/^https?:\/\//, '');
+            resultText.textContent = shortView;
             resultText.href = data.short_url;
+            resultBox.style.display = 'block';
           }
         } catch (error) {
-          console.log('Error: ', error);
+          console.log('Error:', error);
+          alert('Error');
+        } finally {
+          button.disabled = false;
+          button.textContent = 'GET SHORT';
         }
       };
     </script>
