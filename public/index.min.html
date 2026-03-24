@@ -1,0 +1,94 @@
+<meta charset="utf-8" />
+<title>URL shorter</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    color: #1c1c1c;
+  }
+  main {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
+  }
+  h1 {
+    margin: 0 0 20px;
+    font-size: 2rem;
+  }
+  input,
+  button {
+    box-sizing: border-box;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+  }
+  input {
+    width: 100%;
+    border: 1px solid #bbb;
+    font-size: 1.2rem;
+  }
+  button {
+    margin-top: 15px;
+    border: 1px solid #111;
+    background: #1c1c1c;
+    color: #e4e1e1;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #r {
+    display: none;
+    margin-top: 24px;
+    padding: 14px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+  }
+  #r div {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  #a {
+    font-size: 1.7rem;
+    color: #232b70;
+    word-break: break-all;
+  }
+</style>
+
+<main>
+  <h1>URL shorter</h1>
+  <input id="i" type="url" placeholder="Enter long URL" />
+  <button id="b">GET SHORT !</button>
+  <div id="r">
+    <div>🔗 Short URL:</div>
+    <a id="a"></a>
+  </div>
+</main>
+
+<script>
+  b.onclick = async () => {
+    let v = i.value;
+    if (!v) return alert('Enter a URL');
+    try {
+      b.disabled = 1;
+      b.textContent = 'WAIT...';
+      let x = await fetch('/api/get_short', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orig_url: v }),
+      });
+      if (!x.ok) throw Error(x.status);
+      let d = await x.json();
+      if (d.s_url) {
+        a.textContent = d.s_url.replace(/^https?:\/\//, '');
+        a.href = d.s_url;
+        r.style.display = 'block';
+      }
+    } catch (e) {
+      console.log(e);
+      alert('Error');
+    } finally {
+      b.disabled = 0;
+      b.textContent = 'GET SHORT !';
+    }
+  };
+</script>
